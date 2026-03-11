@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 Developer Planner - AI Dəstək</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            transition: background 0.3s ease;
+        }
+
+        .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 10px; }
+
+        .day-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; border: 1px solid #e2e8f0; position: relative; }
+        .day-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(59, 130, 246, 0.08); }
+        
+        .completed-card { background-color: #f0fdf4 !important; border-color: #22c55e !important; }
+        .completed-card h4 { color: #166534; text-decoration: line-through; opacity: 0.7; }
+
+        .selected-card { border-color: #3b82f6 !important; ring: 2px; ring-color: #3b82f6; background-color: #eff6ff !important; }
+
+        .ai-message { border-radius: 18px; padding: 12px 16px; margin-bottom: 10px; font-size: 0.85rem; max-width: 85%; line-height: 1.6; }
+        .user-message { background: #3b82f6; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .bot-message { background: #f1f5f9; color: #334155; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #e2e8f0; }
+
+        .chat-full { position: fixed !important; inset: 20px !important; z-index: 50 !important; height: calc(100vh - 40px) !important; width: calc(100vw - 40px) !important; max-width: none !important; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.3s ease forwards; }
+
+        .active-month { background: #3b82f6 !important; color: white !important; }
+    </style>
+</head>
+<body class="bg-[#f8fafc]">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-20 md:w-72 bg-white border-r border-slate-200 flex flex-col shadow-sm z-10">
+            <div class="p-6 border-b border-slate-100 flex items-center gap-3">
+                <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg">26</div>
+                <div class="hidden md:block">
+                    <h1 class="font-extrabold text-lg tracking-tight">DEV PLANNER</h1>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Mastery Roadmap</p>
+                </div>
+            </div>
+            <nav class="flex-grow overflow-y-auto custom-scroll p-4 space-y-1" id="month-nav">
+                <!-- Months injected by JS -->
+            </nav>
+            <div class="p-6 border-t border-slate-100">
+                <div class="bg-emerald-50 rounded-2xl p-4 hidden md:block">
+                    <p class="text-[10px] font-bold text-emerald-700 mb-1 uppercase">Ümumi Tərəqqi</p>
+                    <div class="w-full bg-emerald-200 h-2 rounded-full mt-2">
+                        <div id="global-progress-bar" class="bg-emerald-600 h-2 rounded-full transition-all duration-700" style="width: 0%"></div>
+                    </div>
+                    <p id="progress-text" class="text-[10px] text-emerald-600 mt-2 font-bold">0% tamamlanıb</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-grow flex flex-col h-screen overflow-hidden">
+            
+            <!-- Header -->
+            <header class="bg-white border-b border-slate-200 px-8 py-5 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div class="flex items-center gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span id="month-badge" class="bg-blue-100 text-blue-600 text-[10px] font-black px-2 py-0.5 rounded uppercase">LVL 01</span>
+                            <h2 id="current-month-title" class="text-3xl font-black text-slate-900 tracking-tight leading-none">Yanvar</h2>
+                        </div>
+                        <p class="text-sm text-slate-500 font-medium" id="month-description">Yüklənir...</p>
+                    </div>
+                </div>
+
+                <div class="flex bg-slate-100 p-1 rounded-2xl border border-slate-200" id="week-selector">
+                    <button onclick="changeWeek(1)" class="week-btn px-4 py-2 rounded-xl text-xs font-bold transition-all" data-week="1">Həftə 1</button>
+                    <button onclick="changeWeek(2)" class="week-btn px-4 py-2 rounded-xl text-xs font-bold transition-all" data-week="2">Həftə 2</button>
+                    <button onclick="changeWeek(3)" class="week-btn px-4 py-2 rounded-xl text-xs font-bold transition-all" data-week="3">Həftə 3</button>
+                    <button onclick="changeWeek(4)" class="week-btn px-4 py-2 rounded-xl text-xs font-bold transition-all" data-week="4">Həftə 4</button>
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <div class="flex-grow overflow-y-auto p-8 custom-scroll">
+                
+                <!-- Days Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-5" id="days-grid">
+                    <!-- Days injected by JS -->
+                </div>
+
+                <!-- AI Dəstək & Tools Section -->
+                <div class="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+                    
+                    <!-- Left Sidebar for Selection Info -->
+                    <div class="lg:col-span-1 space-y-4">
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <span class="text-blue-500">📌</span> Seçilmiş Mövzu
+                            </h3>
+                            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 mb-4">
+                                <p id="selected-topic-display" class="text-sm font-bold text-slate-700">Heç bir mövzu seçilməyib</p>
+                            </div>
+                            <button id="mark-complete-btn" onclick="toggleCompleteCurrent()" class="w-full py-3 rounded-2xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition shadow-lg shadow-emerald-100 flex items-center justify-center gap-2">
+                                <span>✅</span> Mövzunu bitirdim
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- AI Dəstək Chat Area -->
+                    <div class="lg:col-span-2 relative">
+                        <div id="ai-chat-container" class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[500px] transition-all duration-300">
+                            <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse"></div>
+                                    <span class="font-bold text-sm">AI Dəstək</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="toggleChatFullscreen()" class="p-2 hover:bg-slate-200 rounded-lg transition" title="Tam ekran">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+                                    </button>
+                                    <button onclick="askAIPreset('Bu mövzunu mənə kod nümunəsi ilə izah et')" class="text-[10px] font-bold bg-white border border-slate-200 px-3 py-1.5 rounded-lg hover:border-blue-500 transition">💻 Kodla izah</button>
+                                </div>
+                            </div>
+
+                            <div id="chat-window" class="flex-grow overflow-y-auto p-6 flex flex-col space-y-4 custom-scroll bg-[#fcfdfe]">
+                                <!-- Chat messages -->
+                            </div>
+
+                            <div class="p-4 border-t border-slate-100 bg-white flex gap-2">
+                                <input id="chat-input" type="text" placeholder="Sualınızı buraya yazın..." class="flex-grow bg-slate-50 rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all border border-slate-200">
+                                <button onclick="sendMessage()" class="bg-blue-600 text-white p-3 rounded-2xl hover:bg-blue-700 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const apiKey = "AIzaSyDOjP2iV7JvYiSPuukqLuFlEgQuG3dgM5Y"; 
+        const months = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "İyun", "İyul", "Avqust", "Sentyabr", "Oktyabr", "Noyabr", "Dekabr"];
+        const dayNames = ["Bazar ertəsi", "Çərşənbə axşamı", "Çərşənbə", "Cümə axşamı", "Cümə", "Şənbə", "Bazar"];
+        
+        let state = {
+            currentMonth: 0,
+            currentWeek: 1,
+            selectedDayId: null,
+            selectedTopic: null,
+            completedTasks: JSON.parse(localStorage.getItem('devPlanner2026_tasks') || '{}')
+        };
+
+        const curriculum = [
+            { theme: "HTML5: Vebin Təməlləri", weeks: [
+                ["Web-in işləməsi & Browser", "HTML Struktur & Tags", "Attribute & Text Format", "Lists & Tables", "Images & Multimedia", "Semantic Web & SEO", "Proyekt: Bio Page"],
+                ["Forms: Input & Labels", "Button Types & Actions", "Select, Radio & Checkbox", "HTML5 Validation", "Grouping: Div & Span", "ID vs Class Məntiqi", "Proyekt: Login Form"],
+                ["Navigation & Links", "Metadata & Favicons", "A11y (Accessibility)", "Canvas Giriş", "SVG Basics", "BEM Naming Intro", "Proyekt: News Page"],
+                ["Iframe & Embeds", "HTML Optimization", "Headless Tags", "Custom Data Attributes", "Final HTML Refactor", "Code Review", "Aylıq İmtahan"]
+            ]},
+            { theme: "CSS3: Dizayn və Stil", weeks: [
+                ["Selectors & Hierarchy", "Colors & Backgrounds", "Box Model: Content", "Box Model: Padding/Margin", "Borders & Shadows", "Font Styling", "Proyekt: Card UI"],
+                ["Flexbox: Container", "Flexbox: Alignment", "CSS Grid: Templates", "CSS Grid: Spacing", "Position: Relative/Static", "Position: Absolute/Fixed", "Proyekt: Dashboard Layout"],
+                ["Units: px, rem, em, %", "Media Queries Basics", "Responsive Typography", "Variables (Root)", "Transitions & Hover", "Z-index & Stacking", "Proyekt: Portfolio Home"],
+                ["Animations (@keyframes)", "Transforms (Scale/Rotate)", "Gradient Effects", "CSS Clamp/Calc", "Refactor & Clean CSS", "Design Patterns", "Aylıq İmtahan"]
+            ]},
+            { theme: "Müasir CSS və Frameworklər", weeks: [
+                ["Sass/SCSS: Nesting", "Sass: Mixins & Variables", "Tailwind: Utility First", "Tailwind: Layouts", "Tailwind: Hover/Active", "Dark Mode Implementation", "Proyekt: Landing Page"],
+                ["Advanced Grid Layouts", "CSS Architecture", "PostCSS & Autoprefixer", "SVG Animations", "Glassmorphism & Neumorphism", "Responsive Images", "Proyekt: SaaS Interface"],
+                ["Accessibility in CSS", "Print Styles", "Logical Properties", "CSS Houdini Intro", "CSS Performance", "Debugging CSS", "Proyekt: Component Library"],
+                ["Naming Conventions", "Utility vs Semantic", "Clean Code CSS", "Browser Support", "Final Stylist Project", "Code Review", "Aylıq İmtahan"]
+            ]},
+            { theme: "JavaScript: Proqramlaşdırma Giriş", weeks: [
+                ["Variables (Let, Const)", "Data Types & Null/Undefined", "Math Operations", "String Manipulation", "Boolean Logic & If/Else", "Switch Statement", "Proyekt: Calculator"],
+                ["Functions: Declaration", "Arrow Functions", "Function Scopes", "Loops: For & While", "Array Basics", "Object Literals", "Proyekt: To-Do App"],
+                ["DOM: Selecting Elements", "DOM: Modifying Content", "Event Listeners: Clicks", "Event Listeners: Forms", "Styles in JS", "Timing: SetTimeout", "Proyekt: Dynamic Menu"],
+                ["Basic Validation in JS", "Math & Date Objects", "Random Logic", "Refactoring code", "Code Documentation", "Debugging JS", "Aylıq İmtahan"]
+            ]},
+            { theme: "Advanced JavaScript: ES6+", weeks: [
+                ["Destructuring Arrays/Objs", "Spread & Rest Operator", "Template Literals", "Enhanced Object Literals", "Array Methods: Map/Filter", "Array Methods: Reduce", "Proyekt: Data Filter App"],
+                ["Callbacks & High Order", "Lexical This", "Symbols & Iterators", "Map & Set Structures", "Error Handling (Try/Catch)", "Strict Mode", "Proyekt: Quiz Game"],
+                ["Classes & Constructors", "Inheritance (Extends)", "Getters & Setters", "Modules (Import/Export)", "Private Fields", "OOP Principles", "Proyekt: Library System"],
+                ["ES2022+ Features", "Polyfills & Babel", "Code Quality", "Pattern Discovery", "Testing Basics", "Final JS Logic", "Aylıq İmtahan"]
+            ]},
+            { theme: "Asinxron JS və API-lər", weeks: [
+                ["Async / Sync Difference", "Promises: Then/Catch", "Async / Await Syntax", "JSON Data Format", "Fetch API: GET", "Fetch API: POST/PUT", "Proyekt: Weather App"],
+                ["URL Params & Headers", "CORS & Security", "Axios Library Intro", "API Authentication", "Local/Session Storage", "IndexedDB Basics", "Proyekt: Movie Search"],
+                ["WebSockets Intro", "Real-time Basics", "Polling vs Sockets", "Lazy Loading Data", "Pagination Logic", "Caching Data", "Proyekt: Chat UI Mockup"],
+                ["API Documentation", "Postman / Insomnia", "Error UX/UI", "Optimization", "Final API Project", "Review", "Aylıq İmtahan"]
+            ]},
+            { theme: "Git, Build Tools və React Giriş", weeks: [
+                ["Git: Init, Commit, Push", "Branches & Merging", "GitHub Actions Intro", "Node.js & NPM", "Vite / Webpack", "React: JSX Syntax", "Proyekt: Setup React Env"],
+                ["React: Components", "React: Props & Rendering", "React: UseState Hook", "React: List & Keys", "Conditional Rendering", "Fragment & Layouts", "Proyekt: User Profiles"],
+                ["React: UseEffect Hook", "Handling Events in React", "React Forms", "Controlled Components", "Lifting State Up", "Refs (UseRef)", "Proyekt: Task Manager"],
+                ["Component Lifecycle", "Composition vs Inherit", "Styling in React", "Performance Tips", "Clean Component Code", "Folder Structure", "Aylıq İmtahan"]
+            ]},
+            { theme: "React Advanced & State Management", weeks: [
+                ["React Router: Setup", "Dynamic Routing", "Hooks: UseMemo/Callback", "Hooks: UseReducer", "Context API: Basics", "Global State Management", "Proyekt: E-commerce Site"],
+                ["Custom Hooks", "React Portals", "Error Boundaries", "High Order Components", "Render Props", "React Patterns", "Proyekt: Dashboard Pro"],
+                ["React Performance Tooling", "React Testing Library", "Jest Intro", "Storybook for Components", "Framer Motion Intro", "Lottie Animations", "Proyekt: Animated App"],
+                ["Unit Testing Hooks", "Integration Tests", "Code Splitting", "Suspense & Lazy", "Final React Structure", "Refactor", "Aylıq İmtahan"]
+            ]},
+            { theme: "State Management & Next.js", weeks: [
+                ["Redux Toolkit: Store", "Redux: Slices & Reducers", "Redux: Async Thunks", "Zustand vs Redux", "Query Hooks (React Query)", "Mutation Logic", "Proyekt: Social Media App"],
+                ["Next.js: File Routing", "Server Side Rendering", "Static Site Gen (SSG)", "Incremental Generation", "Next API Routes", "Image Optimization", "Proyekt: Blog Platform"],
+                ["Middleware in Next", "Auth with NextAuth", "SEO in Next.js", "Server Actions", "Metadata API", "Cashing in Next", "Proyekt: SaaS Landing"],
+                ["Deployment with Vercel", "Monitoring Performance", "Next.js Best Practices", "Clean Architecture", "Project Refactor", "Review", "Aylıq İmtahan"]
+            ]},
+            { theme: "Backend Giriş & Database", weeks: [
+                ["Node.js: Core Modules", "Express.js Basics", "Middleware Creation", "Routes & Controllers", "Request/Response Cycle", "Error Middleware", "Proyekt: Simple API"],
+                ["MongoDB Intro", "Mongoose Schemas", "CRUD Operations", "Database Indexing", "Aggregations", "Validation in Schema", "Proyekt: Inventory System"],
+                ["JWT Authentication", "Password Hashing (Bcrypt)", "Sessions & Cookies", "Security Basics (Helmet)", "Environment Variables", "MVC Architecture", "Proyekt: Auth Server"],
+                ["Postman API Testing", "Documentation (Swagger)", "Deployment (Render)", "SQL vs NoSQL", "Final Backend Logic", "Review", "Aylıq İmtahan"]
+            ]},
+            { theme: "Full-Stack İnteqrasiya", weeks: [
+                ["Connecting Front to Back", "Proxy vs CORS", "Token Management", "File Upload (Multer)", "Cloudinary Integration", "Email Service (Nodemailer)", "Proyekt: Full Portfolio"],
+                ["Real-time with Socket.io", "Notifications System", "Search Functionality", "Filtering & Sorting", "Admin Dashboard Logic", "Analytics Integration", "Proyekt: Full Shop"],
+                ["Performance Optimization", "Docker Basics", "CI/CD Pipelines", "Redis Caching Intro", "System Architecture", "Security Auditing", "Proyekt: Scalable App"],
+                ["Stress Testing", "Code Cleanup", "Refactoring to Clean", "Final Documentation", "Project Pitching", "Review", "Aylıq İmtahan"]
+            ]},
+            { theme: "Final Proyekt və Karyera", weeks: [
+                ["Final Project Idea", "UI/UX Design Phase", "Database Architecture", "Frontend Development", "Backend Development", "Testing & Debugging", "Proyekt: MVP Release"],
+                ["Feature Expansion", "Responsive Polish", "Deployment & Hosting", "Domain Setup", "GitHub Documentation", "ReadMe Creation", "Proyekt: Final Polish"],
+                ["Portfolio Website Build", "Resume / CV Writing", "LinkedIn Optimization", "Interview Questions", "Mock Interviews", "Algo & DS Basics", "Proyekt: Professional CV"],
+                ["Job Application Strategy", "Soft Skills for Devs", "Open Source Contrib", "Freelancing Tips", "Final Goal Setting", "Graduation", "Aylıq İmtahan"]
+            ]}
+        ];
+
+        function init() {
+            renderMonthNav();
+            updateHeader();
+            changeWeek(1);
+            updateProgressBar();
+            addBotMessage("Salam! Sizin üçün 12 aylıq professional tədris proqramını (HTML -> CSS -> JS -> React -> Fullstack) hazırladım. Hər hansı bir günü seçib suallarınızı verə bilərsiniz.");
+        }
+
+        function renderMonthNav() {
+            const nav = document.getElementById('month-nav');
+            nav.innerHTML = "";
+            months.forEach((m, i) => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-3.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-3 ${i === state.currentMonth ? 'active-month shadow-md' : 'text-slate-500 hover:bg-slate-50'}`;
+                btn.onclick = () => {
+                    state.currentMonth = i;
+                    state.currentWeek = 1;
+                    state.selectedDayId = null;
+                    state.selectedTopic = null;
+                    renderMonthNav();
+                    updateHeader();
+                    changeWeek(1);
+                    document.getElementById('selected-topic-display').innerText = "Heç bir mövzu seçilməyib";
+                };
+                btn.innerHTML = `<span class="${i === state.currentMonth ? 'text-white' : 'text-blue-500'} font-black">${(i+1).toString().padStart(2, '0')}</span> <span class="hidden md:inline">${m}</span>`;
+                nav.appendChild(btn);
+            });
+        }
+
+        function renderDays() {
+            const grid = document.getElementById('days-grid');
+            grid.innerHTML = "";
+            
+            const monthData = curriculum[state.currentMonth] || curriculum[0];
+            const weekData = monthData.weeks[state.currentWeek - 1];
+
+            weekData.forEach((topic, i) => {
+                const dayNum = (state.currentWeek - 1) * 7 + (i + 1);
+                const dayId = `m${state.currentMonth}-w${state.currentWeek}-d${i}`;
+                const isCompleted = state.completedTasks[dayId];
+                const isSelected = state.selectedDayId === dayId;
+
+                const card = document.createElement('div');
+                card.className = `day-card animate-fade bg-white rounded-3xl p-5 flex flex-col h-[240px] ${isCompleted ? 'completed-card' : ''} ${isSelected ? 'selected-card shadow-lg ring-2 ring-blue-500' : ''}`;
+                
+                card.innerHTML = `
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${dayNames[i]}</span>
+                            <div class="flex items-center gap-2">
+                                ${isCompleted ? '<span class="text-emerald-600 text-xs">✔</span>' : ''}
+                                <span class="w-7 h-7 rounded-xl bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-600">${dayNum}</span>
+                            </div>
+                        </div>
+                        <h4 class="text-sm font-extrabold text-slate-800 leading-tight mb-4">${topic}</h4>
+                    </div>
+                    <div class="pt-4 border-t border-slate-50 flex items-center justify-between">
+                         <span class="text-[9px] font-black ${isSelected ? 'text-blue-600' : 'text-slate-400'} uppercase">${isSelected ? "SEÇİLİB" : "SEÇ"}</span>
+                         <span class="text-[8px] text-slate-400">${i >= 5 ? 'Həftəsonu' : 'Dərs'}</span>
+                    </div>
+                `;
+                
+                card.onclick = () => {
+                    state.selectedDayId = dayId;
+                    state.selectedTopic = topic;
+                    document.getElementById('selected-topic-display').innerText = topic;
+                    renderDays();
+                    updateMarkBtn();
+                };
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function updateMarkBtn() {
+            const btn = document.getElementById('mark-complete-btn');
+            if (state.completedTasks[state.selectedDayId]) {
+                btn.innerText = "❌ Bitməyib kimi qeyd et";
+                btn.className = "w-full py-3 rounded-2xl bg-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-300 transition flex items-center justify-center gap-2";
+            } else {
+                btn.innerText = "✅ Mövzunu bitirdim";
+                btn.className = "w-full py-3 rounded-2xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition shadow-lg shadow-emerald-100 flex items-center justify-center gap-2";
+            }
+        }
+
+        function toggleCompleteCurrent() {
+            if (!state.selectedDayId) return;
+            const id = state.selectedDayId;
+            if (state.completedTasks[id]) {
+                delete state.completedTasks[id];
+            } else {
+                state.completedTasks[id] = true;
+            }
+            localStorage.setItem('devPlanner2026_tasks', JSON.stringify(state.completedTasks));
+            renderDays();
+            updateMarkBtn();
+            updateProgressBar();
+        }
+
+        function updateProgressBar() {
+            const totalDays = 12 * 4 * 7; 
+            const completedCount = Object.keys(state.completedTasks).length;
+            const percent = Math.round((completedCount / totalDays) * 100);
+            
+            document.getElementById('global-progress-bar').style.width = percent + "%";
+            document.getElementById('progress-text').innerText = percent + "% tamamlanıb";
+        }
+
+        function changeWeek(w) {
+            state.currentWeek = w;
+            const btns = document.querySelectorAll('.week-btn');
+            btns.forEach(btn => {
+                if (parseInt(btn.dataset.week) === w) {
+                    btn.className = "week-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white shadow-sm text-blue-600";
+                } else {
+                    btn.className = "week-btn px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-slate-600";
+                }
+            });
+            renderDays();
+        }
+
+        function updateHeader() {
+            document.getElementById('current-month-title').innerText = months[state.currentMonth];
+            document.getElementById('month-description').innerText = (curriculum[state.currentMonth] || curriculum[0]).theme;
+            document.getElementById('month-badge').innerText = `LVL ${(state.currentMonth + 1).toString().padStart(2, '0')}`;
+        }
+
+        function toggleChatFullscreen() {
+            const container = document.getElementById('ai-chat-container');
+            container.classList.toggle('chat-full');
+            document.body.style.overflow = container.classList.contains('chat-full') ? 'hidden' : 'auto';
+        }
+
+        async function callGemini(userPrompt) {
+            const chatWin = document.getElementById('chat-window');
+            
+            if (!apiKey) {
+                setTimeout(() => {
+                    addBotMessage(`[Demo Modu]: "${state.selectedTopic || 'Seçilmiş mövzu'}" haqqında sualınızı aldım. API açarı daxil edildikdə mən sizə tam dəstək verəcəm.`);
+                }, 500);
+                return;
+            }
+
+            const typing = addBotMessage("AI Dəstək düşünür...");
+            
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: userPrompt }] }],
+                        systemInstruction: { 
+                            parts: [{ text: `Sən proqramlaşdırma üzrə AI Dəstək sistemisən. Kontekst Mövzu: ${state.selectedTopic || 'Ümumi Proqramlaşdırma'}. Sənə verilən suallara Azərbaycan dilində, sadə, texniki cəhətdən doğru və aydın cavablar verməlisən. Əgər kod nümunəsi lazımdırsa, mütləq Markdown formatında təqdim et.` }] 
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                typing.remove();
+                const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Təəssüf ki, cavab hazırlana bilmədi.";
+                addBotMessage(responseText);
+            } catch (err) {
+                typing.remove();
+                addBotMessage("Bağlantı xətası baş verdi. Zəhmət olmasa bir az sonra yenidən cəhd edin.");
+            }
+        }
+
+        function addBotMessage(text) {
+            const win = document.getElementById('chat-window');
+            const div = document.createElement('div');
+            div.className = "ai-message bot-message animate-fade";
+            div.innerHTML = text.replace(/\n/g, '<br>').replace(/```([\s\S]*?)```/g, '<pre class="bg-slate-800 text-slate-100 p-3 rounded-lg my-2 overflow-x-auto"><code>$1</code></pre>');
+            win.appendChild(div);
+            win.scrollTop = win.scrollHeight;
+            return div;
+        }
+
+        function addUserMessage(text) {
+            const win = document.getElementById('chat-window');
+            const div = document.createElement('div');
+            div.className = "ai-message user-message animate-fade";
+            div.innerText = text;
+            win.appendChild(div);
+            win.scrollTop = win.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const val = input.value.trim();
+            if(!val) return;
+            
+            if(!state.selectedTopic) {
+                addBotMessage("Zəhmət olmasa əvvəlcə öyrəndiyiniz günü/mövzunu seçin ki, sizə daha yaxşı kömək edə bilim.");
+                return;
+            }
+
+            addUserMessage(val);
+            input.value = "";
+            callGemini(val);
+        }
+
+        function askAIPreset(text) {
+            if(!state.selectedTopic) {
+                addBotMessage("Mövzu seçilməyib.");
+                return;
+            }
+            addUserMessage(text);
+            callGemini(text);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
