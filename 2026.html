@@ -3,16 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Developer Planner</title>
+    <title>DEV PLANNER - Proqramlaşdırma Yol Xəritəsi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
         
+        /* Dark Mode Styles */
+        .dark-mode {
+            background-color: #0f172a !important;
+            color: #f1f5f9 !important;
+        }
+
+        .dark-mode aside {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+
+        .dark-mode .day-card {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+            color: #e2e8f0 !important;
+        }
+
+        .dark-mode .day-card h4 {
+            color: #f1f5f9 !important;
+        }
+
+        .dark-mode .selected-card {
+            background-color: #1e40af !important;
+            border-color: #3b82f6 !important;
+        }
+
+        .dark-mode .completed-card {
+            background-color: #064e3b !important;
+            border-color: #10b981 !important;
+        }
+
+        .dark-mode .completed-card h4 {
+            color: #a7f3d0 !important;
+        }
+
+        .dark-mode header {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+
+        .dark-mode #ai-chat-container {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+
+        .dark-mode #chat-window {
+            background-color: #0f172a !important;
+        }
+
+        .dark-mode .bot-message {
+            background-color: #334155 !important;
+            color: #e2e8f0 !important;
+            border-color: #475569 !important;
+        }
+
+        .dark-mode .user-message {
+            background-color: #1d4ed8 !important;
+            color: #dbeafe !important;
+        }
+
+        .dark-mode input {
+            background-color: #334155 !important;
+            border-color: #475569 !important;
+            color: #f1f5f9 !important;
+        }
+
+        .dark-mode input::placeholder {
+            color: #94a3b8 !important;
+        }
+
+        .dark-mode .bg-white {
+            background-color: #1e293b !important;
+        }
+
+        .dark-mode .bg-slate-50 {
+            background-color: #334155 !important;
+        }
+
+        .dark-mode .bg-slate-100 {
+            background-color: #475569 !important;
+        }
+
+        .dark-mode .bg-slate-200 {
+            background-color: #64748b !important;
+        }
+
+        .dark-mode .text-slate-600,
+        .dark-mode .text-slate-700,
+        .dark-mode .text-slate-800 {
+            color: #e2e8f0 !important;
+        }
+
+        .dark-mode .border-slate-200,
+        .dark-mode .border-slate-100 {
+            border-color: #475569 !important;
+        }
+
+        .dark-mode .active-month {
+            background-color: #1d4ed8 !important;
+        }
+
+        .dark-mode .bg-emerald-50 {
+            background-color: #064e3b !important;
+        }
+
+        .dark-mode .bg-emerald-200 {
+            background-color: #047857 !important;
+        }
+
+        .dark-mode .text-emerald-700 {
+            color: #a7f3d0 !important;
+        }
+
+        .dark-mode .text-emerald-600 {
+            color: #34d399 !important;
+        }
+
+        /* Toggle Switch Stili */
+        .theme-toggle {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .theme-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .theme-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .theme-slider:before {
+            position: absolute;
+            content: "☀️";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        input:checked + .theme-slider {
+            background-color: #475569;
+        }
+
+        input:checked + .theme-slider:before {
+            content: "🌙";
+            transform: translateX(30px);
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #f8fafc;
             color: #1e293b;
             transition: background 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .animate-pulse {
+            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
 
         .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -36,31 +213,552 @@
         .animate-fade { animation: fadeIn 0.3s ease forwards; }
 
         .active-month { background: #3b82f6 !important; color: white !important; }
+
+        /* COIN SYSTEM STYLES */
+        .coin-particle {
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23F59E0B"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"/></svg>');
+            background-size: contain;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .coin-celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 120px;
+            z-index: 10000;
+            animation: coinCelebration 1.5s ease-out forwards;
+            pointer-events: none;
+            text-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+        }
+
+        .coin-bounce {
+            animation: coinBounce 0.5s ease-out;
+        }
+
+        @keyframes coinCelebration {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            20% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            40% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+            60% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        @keyframes coinBounce {
+            0% { transform: scale(0.5); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes coinFall {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes coinRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Dark mode üçün coin stili */
+        .dark-mode #coin-counter {
+            background-color: #78350f !important;
+            border-color: #92400e !important;
+        }
+
+        .dark-mode #coin-counter .text-amber-800 {
+            color: #fbbf24 !important;
+        }
+
+        .dark-mode #coin-counter .text-amber-600 {
+            color: #fcd34d !important;
+        }
+
+        /* Level progress bar */
+        .level-progress {
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .level-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        /* Coin çıxılma animasiyası */
+        .coin-deduction {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 120px;
+            z-index: 10000;
+            animation: coinDeduction 1.5s ease-out forwards;
+            pointer-events: none;
+            color: #ef4444;
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+        }
+
+        @keyframes coinDeduction {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            20% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            40% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+            60% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* Qeyd dəftəri tam ekran stili */
+        .notes-full {
+            position: fixed !important;
+            inset: 20px !important;
+            z-index: 50 !important;
+            height: calc(100vh - 40px) !important;
+            width: calc(100vw - 40px) !important;
+            max-width: none !important;
+        }
+
+        /* Header dark mode styles */
+        .dark-mode #current-month-title {
+            color: #60a5fa !important;
+        }
+        
+        .dark-mode #month-description {
+            color: #93c5fd !important;
+        }
+        
+        .dark-mode .bg-blue-50 {
+            background-color: #1e3a8a !important;
+        }
+        
+        .dark-mode .bg-slate-50 {
+            background-color: #334155 !important;
+        }
+        
+        .dark-mode .text-slate-600 {
+            color: #cbd5e1 !important;
+        }
+        
+        /* Həftə dropdown stili */
+        .week-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .week-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 240px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            z-index: 100;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+        }
+
+        .dark-mode .week-dropdown-content {
+            background-color: #1e293b;
+            border-color: #334155;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
+        }
+
+        .week-dropdown-content.show {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .week-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .week-option:hover {
+            background-color: #f8fafc;
+        }
+
+        .dark-mode .week-option:hover {
+            background-color: #334155;
+        }
+
+        .dark-mode .week-option {
+            border-bottom: 1px solid #334155;
+            color: #e2e8f0;
+        }
+
+        .week-option.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .week-option.active .week-badge {
+            background-color: white;
+            color: #3b82f6;
+        }
+
+        .dark-mode .week-option.active {
+            background-color: #1d4ed8;
+        }
+
+        .week-badge {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background-color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .dark-mode .week-badge {
+            background-color: #334155;
+            color: #e2e8f0;
+        }
+
+        /* Quick week selector */
+        .quick-week-selector {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .quick-week-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            background-color: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            color: #475569;
+        }
+
+        .quick-week-btn:hover {
+            background-color: #e2e8f0;
+            transform: translateY(-1px);
+        }
+
+        .quick-week-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .dark-mode .quick-week-btn {
+            background-color: #334155;
+            border-color: #475569;
+            color: #cbd5e1;
+        }
+
+        .dark-mode .quick-week-btn:hover {
+            background-color: #475569;
+        }
+
+        .dark-mode .quick-week-btn.active {
+            background-color: #1d4ed8;
+            border-color: #1d4ed8;
+        }
+
+        /* İzah Modalı Stil */
+        .izah-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .izah-modal.active {
+            display: flex;
+        }
+
+        .izah-modal-content {
+            background-color: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dark-mode .izah-modal-content {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+        }
+
+        .izah-modal-header {
+            padding: 20px 24px;
+            background-color: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dark-mode .izah-modal-header {
+            background-color: #334155;
+            border-color: #475569;
+        }
+
+        .izah-modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .dark-mode .izah-modal-title {
+            color: #f1f5f9;
+        }
+
+        .izah-modal-body {
+            flex-grow: 1;
+            padding: 24px;
+            overflow-y: auto;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .dark-mode .izah-modal-body {
+            color: #e2e8f0;
+            background-color: #1e293b;
+        }
+
+        .izah-modal-body h3 {
+            color: #3b82f6;
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .dark-mode .izah-modal-body h3 {
+            color: #60a5fa;
+        }
+
+        .izah-modal-body p {
+            margin-bottom: 1rem;
+        }
+
+        .izah-modal-body ul, .izah-modal-body ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .izah-modal-body li {
+            margin-bottom: 0.5rem;
+        }
+
+        .izah-modal-body pre {
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+        }
+
+        .dark-mode .izah-modal-body pre {
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+
+        .izah-modal-body code {
+            background-color: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+        }
+
+        .dark-mode .izah-modal-body code {
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+
+        .izah-modal-footer {
+            padding: 16px 24px;
+            background-color: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            text-align: right;
+        }
+
+        .dark-mode .izah-modal-footer {
+            background-color: #334155;
+            border-color: #475569;
+        }
+
+        .izah-btn {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .izah-btn:hover {
+            background-color: #059669;
+        }
+
+        .close-izah-btn {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .close-izah-btn:hover {
+            background-color: #2563eb;
+        }
     </style>
 </head>
 <body class="bg-[#f8fafc]">
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="izah-modal" onclick="if(event.target===this)closeSettingsModal()">
+        <div class="izah-modal-content" style="max-width:480px">
+            <div class="izah-modal-header">
+                <h2 class="izah-modal-title">⚙️ Tənzimləmələr</h2>
+                <button onclick="closeSettingsModal()" class="text-slate-500 hover:text-slate-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="izah-modal-body">
+                <p class="text-sm text-slate-600 mb-4">AI Dəstək funksiyası üçün <b>Google Gemini API</b> açarınızı daxil edin. Açar yalnız brauzerinizdə saxlanılır, heç yerə göndərilmir.</p>
+                <label class="block text-sm font-bold text-slate-700 mb-2">Gemini API Açarı</label>
+                <input id="settings-api-input" type="password" placeholder="AIzaSy..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none mb-3">
+                <div class="flex gap-2">
+                    <button onclick="saveApiKey()" class="flex-1 bg-blue-600 text-white py-2 rounded-xl font-bold text-sm hover:bg-blue-700 transition">💾 Saxla</button>
+                    <button onclick="clearApiKey()" class="bg-red-50 text-red-600 border border-red-200 py-2 px-4 rounded-xl font-bold text-sm hover:bg-red-100 transition">Sil</button>
+                </div>
+                <p id="settings-status" class="text-xs text-emerald-600 mt-3 hidden">✅ API açarı uğurla saxlanıldı!</p>
+                <div class="mt-6 pt-4 border-t border-slate-200">
+                    <p class="text-xs text-slate-400">API açarını <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-500 underline">Google AI Studio</a>-dan əldə edə bilərsiniz.</p>
+                </div>
+            </div>
+            <div class="izah-modal-footer">
+                <button onclick="closeSettingsModal()" class="close-izah-btn">Bağla</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- İzah Modalı -->
+    <div id="izah-modal" class="izah-modal">
+        <div class="izah-modal-content">
+            <div class="izah-modal-header">
+                <h2 id="izah-modal-title" class="izah-modal-title">Mövzu İzahı</h2>
+                <button onclick="closeIzahModal()" class="text-slate-500 hover:text-slate-700 dark-mode:text-slate-400 dark-mode:hover:text-slate-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div id="izah-modal-body" class="izah-modal-body custom-scroll">
+                <!-- İzah məzmunu buraya yüklənəcək -->
+            </div>
+            <div class="izah-modal-footer">
+                <button onclick="closeIzahModal()" class="close-izah-btn">Bağla</button>
+            </div>
+        </div>
+    </div>
 
     <div class="flex h-screen overflow-hidden">
         
         <!-- Sidebar Navigation -->
         <aside class="w-20 md:w-72 bg-white border-r border-slate-200 flex flex-col shadow-sm z-10">
             <div class="p-6 border-b border-slate-100 flex items-center gap-3">
-                <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg">26</div>
+                <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-lg">T</div>
                 <div class="hidden md:block">
-                    <h1 class="font-extrabold text-lg tracking-tight">DEV PLANNER</h1>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Mastery Roadmap</p>
+                    <h1 class="font-extrabold text-xl tracking-tight">DEV PLANNER</h1>
+                    <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Mastery Roadmap</p>
                 </div>
             </div>
+            
+            <!-- Aylar Nav -->
             <nav class="flex-grow overflow-y-auto custom-scroll p-4 space-y-1" id="month-nav">
                 <!-- Months injected by JS -->
             </nav>
+            
+            <!-- Proqress bar (həmişə görünən) -->
             <div class="p-6 border-t border-slate-100">
-                <div class="bg-emerald-50 rounded-2xl p-4 hidden md:block">
-                    <p class="text-[10px] font-bold text-emerald-700 mb-1 uppercase">Ümumi Tərəqqi</p>
-                    <div class="w-full bg-emerald-200 h-2 rounded-full mt-2">
-                        <div id="global-progress-bar" class="bg-emerald-600 h-2 rounded-full transition-all duration-700" style="width: 0%"></div>
+                <div class="bg-emerald-50 rounded-2xl p-5 hidden md:block">
+                    <p class="text-xs font-bold text-emerald-700 mb-2 uppercase">Ümumi Tərəqqi</p>
+                    <div class="w-full bg-emerald-200 h-3 rounded-full mt-3">
+                        <div id="global-progress-bar" class="bg-emerald-600 h-3 rounded-full transition-all duration-700" style="width: 0%"></div>
                     </div>
-                    <p id="progress-text" class="text-[10px] text-emerald-600 mt-2 font-bold">0% tamamlanıb</p>
+                    <p id="progress-text" class="text-xs text-emerald-600 mt-3 font-bold">0% tamamlanıb</p>
                 </div>
             </div>
         </aside>
@@ -68,23 +766,96 @@
         <!-- Main Content -->
         <main class="flex-grow flex flex-col h-screen overflow-hidden">
             
-            <!-- Header -->
-            <header class="bg-white border-b border-slate-200 px-8 py-5 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                <div class="flex items-center gap-4">
-                    <div>
+            <!-- Header - YENİ DİZAYN -->
+            <header class="bg-white border-b border-slate-200 px-8 py-6">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <!-- Sol tərəf: Ay məlumatları -->
+                    <div class="flex flex-col mt-4">
                         <div class="flex items-center gap-2 mb-1">
-                            <span id="month-badge" class="bg-blue-100 text-blue-600 text-[10px] font-black px-2 py-0.5 rounded uppercase">LVL 01</span>
-                            <h2 id="current-month-title" class="text-3xl font-black text-slate-900 tracking-tight leading-none">Yanvar</h2>
+                            <span id="month-badge" class="bg-blue-100 text-blue-600 text-sm font-black px-4 py-2 rounded-full uppercase">LVL 01</span>
+                            <!-- Yeni Həftə Seçici -->
+                            <div class="week-dropdown">
+                                <button onclick="toggleWeekDropdown()" class="bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    Həftə <span id="current-week-display">1</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <div id="week-dropdown-content" class="week-dropdown-content">
+                                    <div class="p-4 border-b border-slate-100 dark-mode:border-slate-700">
+                                        <h4 class="font-bold text-slate-700 dark-mode:text-slate-300 mb-2">Cari Ay: <span id="dropdown-month-name">Yanvar</span></h4>
+                                        <p class="text-sm text-slate-500 dark-mode:text-slate-400 mb-3">Həftə seçin:</p>
+                                        <div class="quick-week-selector">
+                                            <button onclick="changeWeek(1)" class="quick-week-btn active">H1</button>
+                                            <button onclick="changeWeek(2)" class="quick-week-btn">H2</button>
+                                            <button onclick="changeWeek(3)" class="quick-week-btn">H3</button>
+                                            <button onclick="changeWeek(4)" class="quick-week-btn">H4</button>
+                                        </div>
+                                    </div>
+                                    <!-- Sadəcə cari ayın həftələri göstərilir -->
+                                    <div id="current-month-weeks-list">
+                                        <!-- Cari ayın həftələri buraya əlavə olunacaq -->
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <p class="text-sm text-slate-500 font-medium" id="month-description">Yüklənir...</p>
+                        <h2 id="current-month-title" class="text-5xl font-black text-slate-900 tracking-tight leading-tight dark-mode:text-blue-400">Yanvar</h2>
+                        <p class="text-lg text-slate-600 font-medium mt-2 dark-mode:text-blue-300" id="month-description">Yüklənir...</p>
                     </div>
-                </div>
 
-                <div class="flex bg-slate-100 p-1 rounded-2xl border border-slate-200" id="week-selector">
-                    <button onclick="changeWeek(1)" class="week-btn px-4 py-2 rounded-xl text-xs font-bold transition-all" data-week="1">Həftə 1</button>
-                    <button onclick="changeWeek(2)" class="week-btn px-4 py-2 rounded-xl text-xs font-bold transition-all" data-week="2">Həftə 2</button>
-                    <button onclick="changeWeek(3)" class="week-btn px-4 py-2 rounded-xl text-xs font-bold transition-all" data-week="3">Həftə 3</button>
-                    <button onclick="changeWeek(4)" class="week-btn px-4 py-2 rounded-xl text-xs font-bold transition-all" data-week="4">Həftə 4</button>
+                    <!-- Sağ tərəf: İdare paneli -->
+                    <div class="flex flex-wrap items-center justify-end gap-4">
+                        <!-- Taymer (ORTAYA GƏLDİ) -->
+                        <div class="flex flex-col items-center">
+                            <div class="bg-blue-50 border border-blue-200 rounded-2xl px-6 py-4 flex items-center gap-3 dark-mode:bg-blue-900/30 dark-mode:border-blue-700">
+                                <span class="text-blue-600 text-sm font-bold">⏱️ Taymer:</span>
+                                <div id="timer-display" class="text-slate-800 font-mono font-bold text-xl dark-mode:text-white">25:00</div>
+                                <div class="flex gap-2">
+                                    <button onclick="startTimer()" id="timer-start-btn" class="bg-blue-600 text-white text-xs px-4 py-2 rounded-lg hover:bg-blue-700 transition">Başla</button>
+                                    <button onclick="pauseTimer()" id="timer-pause-btn" class="bg-slate-200 text-slate-700 text-xs px-4 py-2 rounded-lg hover:bg-slate-300 transition">Dayandır</button>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 mt-2">
+                                <button onclick="setTimer(25)" class="bg-blue-100 text-blue-600 text-xs px-3 py-2 rounded-lg hover:bg-blue-200 transition">25m</button>
+                                <button onclick="setTimer(5)" class="bg-green-100 text-green-600 text-xs px-3 py-2 rounded-lg hover:bg-green-200 transition">5m</button>
+                                <button onclick="setTimer(15)" class="bg-purple-100 text-purple-600 text-xs px-3 py-2 rounded-lg hover:bg-purple-200 transition">15m</button>
+                                <button onclick="resetTimer()" id="timer-reset-btn" class="bg-red-50 text-red-600 text-xs px-3 py-2 rounded-lg hover:bg-red-100 transition">Sıfırla</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Cari həftə -->
+                        <div class="text-base text-slate-600 font-medium bg-slate-50 px-5 py-4 rounded-xl dark-mode:bg-slate-800 dark-mode:text-slate-300">
+                            Cari həftə: <span id="current-week-header" class="text-blue-600 font-bold dark-mode:text-blue-400">Həftə 1</span>
+                        </div>
+                        
+                        <!-- Coin sayğacı -->
+                        <div id="coin-counter" class="bg-amber-50 dark-mode:bg-amber-900/30 border border-amber-200 dark-mode:border-amber-800 rounded-2xl px-5 py-3 flex items-center gap-3 shadow-lg">
+                            <span class="text-amber-600 dark-mode:text-amber-400 font-bold text-lg">🪙</span>
+                            <div>
+                                <div class="text-amber-800 dark-mode:text-amber-300 font-black text-xl" id="total-coins">0</div>
+                                <div class="text-amber-600 dark-mode:text-amber-400 text-xs font-medium">Toplam Coin</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Dark mode toggle (AŞAĞIDA) -->
+                        <div class="flex flex-col items-center gap-1 mt-8">
+                            <span class="text-xs text-slate-600 dark-mode:text-slate-400">Tema</span>
+                            <label class="theme-toggle">
+                                <input type="checkbox" id="theme-toggle" onchange="toggleDarkMode()">
+                                <span class="theme-slider"></span>
+                            </label>
+                        </div>
+                        <!-- Settings Button -->
+                        <div class="flex flex-col items-center gap-1 mt-8">
+                            <span class="text-xs text-slate-600 dark-mode:text-slate-400">API</span>
+                            <button onclick="openSettingsModal()" id="settings-btn" class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition" title="API Tənzimləmələri">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </header>
 
@@ -101,43 +872,77 @@
                     
                     <!-- Left Sidebar for Selection Info -->
                     <div class="lg:col-span-1 space-y-4">
-                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-                            <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <!-- Seçilmiş Mövzu -->
+                        <div class="bg-white dark-mode:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark-mode:border-slate-700 shadow-sm">
+                            <h3 class="font-bold text-slate-800 dark-mode:text-white mb-4 flex items-center gap-2">
                                 <span class="text-blue-500">📌</span> Seçilmiş Mövzu
                             </h3>
-                            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 mb-4">
-                                <p id="selected-topic-display" class="text-sm font-bold text-slate-700">Heç bir mövzu seçilməyib</p>
+                            <div class="p-4 bg-slate-50 dark-mode:bg-slate-900 rounded-2xl border border-slate-100 dark-mode:border-slate-700 mb-4">
+                                <p id="selected-topic-display" class="text-base font-bold text-slate-700 dark-mode:text-slate-300">Heç bir mövzu seçilməyib</p>
                             </div>
-                            <button id="mark-complete-btn" onclick="toggleCompleteCurrent()" class="w-full py-3 rounded-2xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition shadow-lg shadow-emerald-100 flex items-center justify-center gap-2">
+                            <button id="mark-complete-btn" onclick="toggleCompleteCurrent()" class="w-full py-3 rounded-2xl bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 transition shadow-lg shadow-emerald-100 dark-mode:shadow-emerald-900/20 flex items-center justify-center gap-2">
                                 <span>✅</span> Mövzunu bitirdim
                             </button>
+                        </div>
+
+                        <!-- Qeyd Dəftəri -->
+                        <div id="notes-container-main" class="bg-white dark-mode:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark-mode:border-slate-700 shadow-sm">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-slate-800 dark-mode:text-white flex items-center gap-2">
+                                    <span class="text-purple-500">📝</span> Qeyd Dəftəri
+                                </h3>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="toggleNotesFullscreen()" class="p-1 hover:bg-slate-200 dark-mode:hover:bg-slate-700 rounded-lg transition" title="Tam ekran">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 dark-mode:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                        </svg>
+                                    </button>
+                                    <button onclick="clearNotes()" class="text-[10px] font-bold bg-white dark-mode:bg-slate-800 border border-slate-200 dark-mode:border-slate-700 px-2 py-1 rounded-lg hover:border-red-500 transition dark-mode:text-white" title="Qeydləri təmizlə">
+                                        🗑️ Təmizlə
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="notes-list" class="mb-4 max-h-60 overflow-y-auto custom-scroll">
+                                <!-- Bütün qeydlər buraya əlavə olunacaq -->
+                            </div>
+                            <div class="flex gap-2">
+                                <input id="note-input" type="text" placeholder="Qeyd əlavə et..." class="flex-grow bg-slate-50 dark-mode:bg-slate-900 rounded-2xl px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500 outline-none transition-all border border-slate-200 dark-mode:border-slate-700">
+                                <button onclick="addNote()" class="bg-purple-600 text-white p-2 rounded-2xl hover:bg-purple-700 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 3a1 1 0 00-1 1v5H4a1 1 0 100 2h5v5a1 1 0 102 0v-5h5a1 1 0 100-2h-5V4a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     <!-- AI Dəstək Chat Area -->
                     <div class="lg:col-span-2 relative">
-                        <div id="ai-chat-container" class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[500px] transition-all duration-300">
-                            <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+                        <div id="ai-chat-container" class="bg-white dark-mode:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark-mode:border-slate-700 overflow-hidden flex flex-col h-[500px] transition-all duration-300">
+                            <div class="bg-slate-50 dark-mode:bg-slate-900 px-6 py-4 border-b border-slate-200 dark-mode:border-slate-700 flex justify-between items-center">
                                 <div class="flex items-center gap-3">
                                     <div class="w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse"></div>
-                                    <span class="font-bold text-sm">AI Dəstək</span>
+                                    <span class="font-bold text-sm dark-mode:text-white">AI Dəstək</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <button onclick="toggleChatFullscreen()" class="p-2 hover:bg-slate-200 rounded-lg transition" title="Tam ekran">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+                                    <button onclick="toggleChatFullscreen()" class="p-2 hover:bg-slate-200 dark-mode:hover:bg-slate-700 rounded-lg transition" title="Tam ekran">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 dark-mode:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
                                     </button>
-                                    <button onclick="askAIPreset('Bu mövzunu mənə kod nümunəsi ilə izah et')" class="text-[10px] font-bold bg-white border border-slate-200 px-3 py-1.5 rounded-lg hover:border-blue-500 transition">💻 Kodla izah</button>
+                                    <button onclick="clearChat()" class="text-[10px] font-bold bg-white dark-mode:bg-slate-800 border border-slate-200 dark-mode:border-slate-700 px-3 py-1.5 rounded-lg hover:border-red-500 transition dark-mode:text-white" title="Sohbeti təmizlə">
+                                        🗑️ Sohbeti Təmizlə
+                                    </button>
+                                    <button onclick="askAIPreset('Bu mövzunu mənə kod nümunəsi ilə izah et')" class="text-[10px] font-bold bg-white dark-mode:bg-slate-800 border border-slate-200 dark-mode:border-slate-700 px-3 py-1.5 rounded-lg hover:border-blue-500 transition dark-mode:text-white">💻 Kodla izah</button>
                                 </div>
                             </div>
 
-                            <div id="chat-window" class="flex-grow overflow-y-auto p-6 flex flex-col space-y-4 custom-scroll bg-[#fcfdfe]">
+                            <div id="chat-window" class="flex-grow overflow-y-auto p-6 flex flex-col space-y-4 custom-scroll bg-[#fcfdfe] dark-mode:bg-slate-900">
                                 <!-- Chat messages -->
                             </div>
 
-                            <div class="p-4 border-t border-slate-100 bg-white flex gap-2">
-                                <input id="chat-input" type="text" placeholder="Sualınızı buraya yazın..." class="flex-grow bg-slate-50 rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all border border-slate-200">
+                            <div class="p-4 border-t border-slate-100 dark-mode:border-slate-700 bg-white dark-mode:bg-slate-800 flex gap-2">
+                                <input id="chat-input" type="text" placeholder="Sualınızı buraya yazın..." class="flex-grow bg-slate-50 dark-mode:bg-slate-900 rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all border border-slate-200 dark-mode:border-slate-700 dark-mode:text-white">
                                 <button onclick="sendMessage()" class="bg-blue-600 text-white p-3 rounded-2xl hover:bg-blue-700 transition">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
                                 </button>
                             </div>
                         </div>
@@ -149,17 +954,26 @@
     </div>
 
     <script>
-        const apiKey = "AIzaSyDOjP2iV7JvYiSPuukqLuFlEgQuG3dgM5Y"; 
+        // API key localStorage-dan oxunur, kodda olmur
+        let apiKey = localStorage.getItem('devPlanner2026_apiKey') || '';
         const months = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "İyun", "İyul", "Avqust", "Sentyabr", "Oktyabr", "Noyabr", "Dekabr"];
         const dayNames = ["Bazar ertəsi", "Çərşənbə axşamı", "Çərşənbə", "Cümə axşamı", "Cümə", "Şənbə", "Bazar"];
         
         let state = {
-            currentMonth: 0,
-            currentWeek: 1,
+            currentMonth: parseInt(localStorage.getItem('devPlanner2026_month')) || 0,
+            currentWeek: parseInt(localStorage.getItem('devPlanner2026_week')) || 1,
             selectedDayId: null,
             selectedTopic: null,
-            completedTasks: JSON.parse(localStorage.getItem('devPlanner2026_tasks') || '{}')
+            completedTasks: JSON.parse(localStorage.getItem('devPlanner2026_tasks') || '{}'),
+            coins: parseInt(localStorage.getItem('devPlanner2026_coins')) || 0,
+            notes: JSON.parse(localStorage.getItem('devPlanner2026_notes')) || [],
+            weekDropdownOpen: false
         };
+
+        function saveStateToStorage() {
+            localStorage.setItem('devPlanner2026_month', state.currentMonth);
+            localStorage.setItem('devPlanner2026_week', state.currentWeek);
+        }
 
         const curriculum = [
             { theme: "HTML5: Vebin Təməlləri", weeks: [
@@ -236,12 +1050,486 @@
             ]}
         ];
 
+        // ========== HƏFTƏ DROPDOWN FUNKSİYALARI ==========
+        function toggleWeekDropdown() {
+            const dropdown = document.getElementById('week-dropdown-content');
+            dropdown.classList.toggle('show');
+            state.weekDropdownOpen = !state.weekDropdownOpen;
+            
+            if (state.weekDropdownOpen) {
+                updateCurrentMonthWeeks();
+                document.addEventListener('click', closeWeekDropdownOnClickOutside);
+            } else {
+                document.removeEventListener('click', closeWeekDropdownOnClickOutside);
+            }
+        }
+
+        function closeWeekDropdownOnClickOutside(event) {
+            const dropdown = document.getElementById('week-dropdown-content');
+            const button = document.querySelector('.week-dropdown button');
+            
+            if (!dropdown.contains(event.target) && !button.contains(event.target)) {
+                dropdown.classList.remove('show');
+                state.weekDropdownOpen = false;
+                document.removeEventListener('click', closeWeekDropdownOnClickOutside);
+            }
+        }
+
+        function updateCurrentMonthWeeks() {
+            const dropdownMonth = document.getElementById('dropdown-month-name');
+            const currentMonthWeeksList = document.getElementById('current-month-weeks-list');
+            
+            dropdownMonth.textContent = months[state.currentMonth];
+            
+            currentMonthWeeksList.innerHTML = '';
+            
+            // SADƏCƏ CARİ AYIN HƏFTƏLƏRİNİ GÖSTƏR
+            const currentMonth = state.currentMonth;
+            const monthName = months[currentMonth];
+            const monthTheme = curriculum[currentMonth]?.theme || '';
+            
+            const monthSection = document.createElement('div');
+            
+            // Cari ayın 4 həftəsi
+            for (let weekNum = 1; weekNum <= 4; weekNum++) {
+                const weekOption = document.createElement('div');
+                const isActive = weekNum === state.currentWeek;
+                
+                weekOption.className = `week-option ${isActive ? 'active' : ''}`;
+                weekOption.innerHTML = `
+                    <div class="week-badge">${weekNum}</div>
+                    <div class="flex-grow">
+                        <div class="font-medium">Həftə ${weekNum}</div>
+                        <div class="text-xs text-slate-500 dark-mode:text-slate-400 truncate">${curriculum[currentMonth]?.weeks[weekNum-1]?.[0] || 'Mövzu yüklənir...'}</div>
+                    </div>
+                    ${isActive ? '<span class="text-xs font-bold">✓</span>' : ''}
+                `;
+                
+                weekOption.onclick = () => {
+                    changeWeek(weekNum);
+                    toggleWeekDropdown();
+                };
+                
+                monthSection.appendChild(weekOption);
+            }
+            
+            currentMonthWeeksList.appendChild(monthSection);
+        }
+
+        // ========== İZAH MODALI FUNKSİYALARI ==========
+        function showIzahModal(topic) {
+            const modal = document.getElementById('izah-modal');
+            const title = document.getElementById('izah-modal-title');
+            const body = document.getElementById('izah-modal-body');
+            
+            title.textContent = topic;
+            
+            let izahContent = '';
+            
+            if (topic === "Web-in işləməsi & Browser") {
+                izahContent = `
+                    <h3>🌐 Web-in işləməsi & Browser - Tam İzah</h3>
+                    <p>Veb texnologiyalarının necə işlədiyini başa düşmək hər veb inkişafçısı üçün əsas bilikdir...</p>
+                    <!-- Mövzu məzmunu -->
+                `;
+            } else if (topic === "HTML Struktur & Tags") {
+                izahContent = `
+                    <h3>🏗️ HTML Struktur & Tags - Hərtərəfli Bələdçi</h3>
+                    <p>HTML (HyperText Markup Language) veb səhifələrin strukturunu təyin edən standart işarələmə dilidir...</p>
+                    <!-- Mövzu məzmunu -->
+                `;
+            } else {
+                izahContent = `
+                    <h3>📚 ${topic} - Hərtərəfli Bələdçi</h3>
+                    <p>Bu mövzu proqramlaşdırma yol xəritənizin mühüm bir hissəsidir...</p>
+                    <!-- Ümumi məzmun -->
+                `;
+            }
+            
+            body.innerHTML = izahContent;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeIzahModal() {
+            const modal = document.getElementById('izah-modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // ========== QEYD DƏFTƏRİ FUNKSİYALARI ==========
+        function addNote() {
+            const noteInput = document.getElementById('note-input');
+            const noteText = noteInput.value.trim();
+            
+            if (noteText) {
+                const timestamp = new Date().toLocaleString('az-AZ');
+                state.notes.push({
+                    text: noteText,
+                    time: timestamp,
+                    topic: state.selectedTopic || 'Ümumi'
+                });
+                
+                localStorage.setItem('devPlanner2026_notes', JSON.stringify(state.notes));
+                noteInput.value = '';
+                renderNotes();
+                addBotMessage(`📝 Yeni qeyd əlavə edildi: "${noteText}"`);
+            }
+        }
+
+        function renderNotes() {
+            const notesList = document.getElementById('notes-list');
+            notesList.innerHTML = '';
+            
+            if (state.notes.length === 0) {
+                notesList.innerHTML = '<p class="text-sm text-slate-500 dark-mode:text-slate-400 italic text-center py-4">Hələ qeyd yoxdur</p>';
+                return;
+            }
+            
+            const reversedNotes = [...state.notes].reverse();
+            
+            reversedNotes.forEach((note, index) => {
+                const noteElement = document.createElement('div');
+                noteElement.className = `mb-3 p-3 bg-slate-50 dark-mode:bg-slate-900 rounded-lg border border-slate-200 dark-mode:border-slate-700 ${index === 0 ? 'border-l-4 border-l-purple-500' : ''}`;
+                noteElement.innerHTML = `
+                    <p class="text-sm text-slate-700 dark-mode:text-slate-300">${note.text}</p>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-xs text-slate-500 dark-mode:text-slate-400">${note.topic}</span>
+                        <span class="text-xs text-slate-400 dark-mode:text-slate-500">${note.time}</span>
+                    </div>
+                `;
+                notesList.appendChild(noteElement);
+            });
+        }
+
+        function clearNotes() {
+            if (confirm("Bütün qeydləri silmək istədiyinizə əminsiniz?")) {
+                state.notes = [];
+                localStorage.setItem('devPlanner2026_notes', JSON.stringify(state.notes));
+                renderNotes();
+                addBotMessage("📝 Bütün qeydlər silindi.");
+            }
+        }
+
+        function toggleNotesFullscreen() {
+            const container = document.getElementById('notes-container-main');
+            container.classList.toggle('notes-full');
+            document.body.style.overflow = container.classList.contains('notes-full') ? 'hidden' : 'auto';
+            
+            const notesList = document.getElementById('notes-list');
+            if (container.classList.contains('notes-full')) {
+                notesList.style.maxHeight = 'calc(100vh - 200px)';
+            } else {
+                notesList.style.maxHeight = '240px';
+            }
+        }
+
+        // ========== COIN SYSTEM FUNCTIONS ==========
+        function createCoinParticles(count = 20) {
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const coin = document.createElement('div');
+                    coin.className = 'coin-particle';
+                    
+                    const startX = Math.random() * window.innerWidth;
+                    const endX = startX + (Math.random() * 100 - 50);
+                    const startY = -50;
+                    const endY = window.innerHeight + 50;
+                    
+                    coin.style.left = `${startX}px`;
+                    coin.style.top = `${startY}px`;
+                    
+                    const duration = 1 + Math.random() * 1.5;
+                    const delay = Math.random() * 0.5;
+                    const totalMs = Math.ceil((duration + delay) * 1000) + 50;
+                    
+                    coin.style.setProperty('--tx', `${endX - startX}px`);
+                    coin.style.setProperty('--ty', `${endY - startY}px`);
+                    
+                    coin.style.animation = `coinFall ${duration}s ease-in ${delay}s forwards, coinRotate ${0.5 + Math.random() * 0.5}s linear ${delay}s ${Math.ceil(duration / 0.7)}`;
+                    
+                    document.body.appendChild(coin);
+                    
+                    setTimeout(() => {
+                        if (coin.parentNode) coin.parentNode.removeChild(coin);
+                    }, totalMs);
+                    
+                }, i * 50);
+            }
+        }
+
+        function showCoinCelebration(amount) {
+            const celebration = document.createElement('div');
+            celebration.className = 'coin-celebration';
+            celebration.innerHTML = `🪙<div style="font-size: 24px; text-align: center; margin-top: 10px; font-weight: bold; color: #fbbf24;">+${amount} Coin!</div>`;
+            celebration.style.color = '#fbbf24';
+            document.body.appendChild(celebration);
+            celebration.addEventListener('animationend', () => {
+                if (celebration.parentNode) celebration.parentNode.removeChild(celebration);
+            });
+            // Fallback
+            setTimeout(() => { if (celebration.parentNode) celebration.parentNode.removeChild(celebration); }, 2000);
+        }
+
+        function addCoins(amount) {
+            const coinsPerTopic = 100;
+            const addedCoins = amount || coinsPerTopic;
+            
+            state.coins += addedCoins;
+            localStorage.setItem('devPlanner2026_coins', state.coins.toString());
+            
+            updateCoinCounter();
+            
+            createCoinParticles(15);
+            showCoinCelebration(addedCoins);
+            
+            addBotMessage(`🪙 Təbriklər! ${addedCoins} coin qazandınız!`);
+            
+            const coinCounter = document.getElementById('coin-counter');
+            coinCounter.classList.add('coin-bounce');
+            setTimeout(() => {
+                coinCounter.classList.remove('coin-bounce');
+            }, 500);
+            
+            return addedCoins;
+        }
+
+        function deductCoins(amount) {
+            const coinsPerTopic = 100;
+            const deductedCoins = amount || coinsPerTopic;
+            
+            state.coins = Math.max(0, state.coins - deductedCoins);
+            localStorage.setItem('devPlanner2026_coins', state.coins.toString());
+            
+            updateCoinCounter();
+            
+            addBotMessage(`❌ ${deductedCoins} coin çıxıldı.`);
+            
+            showCoinDeductionAnimation(deductedCoins);
+            
+            const coinCounter = document.getElementById('coin-counter');
+            coinCounter.classList.add('coin-bounce');
+            setTimeout(() => {
+                coinCounter.classList.remove('coin-bounce');
+            }, 500);
+        }
+
+        function showCoinDeductionAnimation(amount) {
+            const deduction = document.createElement('div');
+            deduction.className = 'coin-celebration';
+            deduction.innerHTML = `🪙<div style="font-size: 24px; text-align: center; margin-top: 10px; font-weight: bold; color: #ef4444;">-${amount} Coin!</div>`;
+            deduction.style.color = '#ef4444';
+            deduction.style.textShadow = '0 0 20px rgba(239, 68, 68, 0.5)';
+            document.body.appendChild(deduction);
+            deduction.addEventListener('animationend', () => {
+                if (deduction.parentNode) deduction.parentNode.removeChild(deduction);
+            });
+            setTimeout(() => { if (deduction.parentNode) deduction.parentNode.removeChild(deduction); }, 2000);
+        }
+
+        function updateCoinCounter() {
+            const coinElement = document.getElementById('total-coins');
+            if (coinElement) {
+                coinElement.textContent = state.coins;
+            }
+        }
+
+        // ========== TAYMER FUNKSİYALARI ==========
+        let timerInterval = null;
+        let timerSeconds = 25 * 60;
+        let isTimerRunning = false;
+
+        function startTimer() {
+            if (isTimerRunning) return;
+            
+            isTimerRunning = true;
+            timerInterval = setInterval(() => {
+                if (timerSeconds > 0) {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                    
+                    if (timerSeconds === 5 * 60) {
+                        showNotification("Taymer", "5 dəqiqə qaldı!");
+                    }
+                    
+                    if (timerSeconds === 0) {
+                        clearInterval(timerInterval);
+                        isTimerRunning = false;
+                        showNotification("Taymer", "Vaxt bitdi! Təbriklər 🎉");
+                        document.getElementById('timer-start-btn').innerText = "Yenidən başla";
+                    }
+                }
+            }, 1000);
+            
+            updateTimerButtons();
+        }
+
+        function pauseTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                isTimerRunning = false;
+                updateTimerButtons();
+            }
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timerSeconds = 25 * 60;
+            updateTimerDisplay();
+            document.getElementById('timer-start-btn').innerText = "Başla";
+            updateTimerButtons();
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            const timerDisplay = document.getElementById('timer-display');
+            
+            if (timerDisplay) {
+                timerDisplay.innerHTML = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                const isDarkMode = document.body.classList.contains('dark-mode');
+                
+                if (minutes < 5) {
+                    timerDisplay.className = `font-mono font-bold text-xl animate-pulse ${isDarkMode ? 'text-red-400' : 'text-red-600'}`;
+                } else if (minutes < 10) {
+                    timerDisplay.className = `font-mono font-bold text-xl ${isDarkMode ? 'text-yellow-400' : 'text-amber-600'}`;
+                } else {
+                    timerDisplay.className = `font-mono font-bold text-xl ${isDarkMode ? 'text-white' : 'text-slate-800'}`;
+                }
+            }
+        }
+
+        function updateTimerButtons() {
+            const startBtn = document.getElementById('timer-start-btn');
+            const pauseBtn = document.getElementById('timer-pause-btn');
+            
+            if (isTimerRunning) {
+                startBtn.disabled = true;
+                startBtn.className = "bg-slate-400 text-white text-xs px-4 py-2 rounded-lg cursor-not-allowed";
+                pauseBtn.className = "bg-blue-600 text-white text-xs px-4 py-2 rounded-lg hover:bg-blue-700 transition";
+            } else {
+                startBtn.disabled = false;
+                startBtn.className = "bg-blue-600 text-white text-xs px-4 py-2 rounded-lg hover:bg-blue-700 transition";
+                pauseBtn.className = "bg-slate-200 text-slate-700 text-xs px-4 py-2 rounded-lg hover:bg-slate-300 transition";
+            }
+        }
+
+        function showNotification(title, message) {
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification(title, { body: message });
+            } else if ("Notification" in window && Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification(title, { body: message });
+                    }
+                });
+            }
+            
+            addBotMessage(`⏰ ${message} (${title})`);
+        }
+
+        function setTimer(minutes) {
+            pauseTimer();
+            timerSeconds = minutes * 60;
+            updateTimerDisplay();
+            document.getElementById('timer-start-btn').innerText = "Başla";
+            
+            const timerTypes = {
+                25: "🎯 Fokus",
+                5: "☕ Fasilə",
+                15: "🌿 Uzun fasilə"
+            };
+            
+            const typeName = timerTypes[minutes] || "Xüsusi";
+            addBotMessage(`Taymer ${typeName} rejiminə təyin edildi: ${minutes} dəqiqə`);
+        }
+
+        // ========== DARK/LIGHT MODE FUNKSİYALARI ==========
+        function initTheme() {
+            const savedTheme = localStorage.getItem('devplanner-theme');
+            const themeToggle = document.getElementById('theme-toggle');
+            
+            if (savedTheme === 'dark' || 
+                (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.body.classList.add('dark-mode');
+                if (themeToggle) themeToggle.checked = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                if (themeToggle) themeToggle.checked = false;
+            }
+        }
+
+        function toggleDarkMode() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const isDarkMode = themeToggle.checked;
+            
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('devplanner-theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('devplanner-theme', 'light');
+            }
+            
+            updateTimerDisplay();
+        }
+
+        if (window.matchMedia) {
+            const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            colorSchemeQuery.addEventListener('change', (e) => {
+                if (!localStorage.getItem('devplanner-theme')) {
+                    if (e.matches) {
+                        document.body.classList.add('dark-mode');
+                        document.getElementById('theme-toggle').checked = true;
+                    } else {
+                        document.body.classList.remove('dark-mode');
+                        document.getElementById('theme-toggle').checked = false;
+                    }
+                }
+            });
+        }
+
+        // ========== ENTER KEY LISTENER ==========
+        function setupEnterKeyListener() {
+            const chatInput = document.getElementById('chat-input');
+            const noteInput = document.getElementById('note-input');
+            
+            if (chatInput) {
+                chatInput.addEventListener('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        sendMessage();
+                    }
+                });
+            }
+            
+            if (noteInput) {
+                noteInput.addEventListener('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        addNote();
+                    }
+                });
+            }
+        }
+
+        // ========== ƏSAS FUNKSİYALAR ==========
         function init() {
             renderMonthNav();
             updateHeader();
-            changeWeek(1);
+            changeWeek(state.currentWeek);
             updateProgressBar();
-            addBotMessage("Salam! Sizin üçün 12 aylıq professional tədris proqramını (HTML -> CSS -> JS -> React -> Fullstack) hazırladım. Hər hansı bir günü seçib suallarınızı verə bilərsiniz.");
+            updateTimerDisplay();
+            updateTimerButtons();
+            updateCoinCounter();
+            renderNotes();
+            initTheme();
+            addBotMessage("Salam! Sizin üçün 12 aylıq professional tədris proqramını hazırladım. Hər mövzunu bitirdikdə 🪙 coin qazanacaqsınız!");
+            
+            setupEnterKeyListener();
+            updateSettingsBtnStyle();
         }
 
         function renderMonthNav() {
@@ -249,18 +1537,29 @@
             nav.innerHTML = "";
             months.forEach((m, i) => {
                 const btn = document.createElement('button');
-                btn.className = `w-full text-left p-3.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-3 ${i === state.currentMonth ? 'active-month shadow-md' : 'text-slate-500 hover:bg-slate-50'}`;
+                btn.className = `w-full text-left p-4 rounded-2xl transition-all flex items-center gap-4 ${i === state.currentMonth ? 'active-month shadow-md' : 'text-slate-500 hover:bg-slate-50 dark-mode:hover:bg-slate-800'}`;
                 btn.onclick = () => {
                     state.currentMonth = i;
                     state.currentWeek = 1;
                     state.selectedDayId = null;
                     state.selectedTopic = null;
+                    saveStateToStorage();
                     renderMonthNav();
                     updateHeader();
                     changeWeek(1);
                     document.getElementById('selected-topic-display').innerText = "Heç bir mövzu seçilməyib";
                 };
-                btn.innerHTML = `<span class="${i === state.currentMonth ? 'text-white' : 'text-blue-500'} font-black">${(i+1).toString().padStart(2, '0')}</span> <span class="hidden md:inline">${m}</span>`;
+                
+                btn.innerHTML = `
+                    <span class="${i === state.currentMonth ? 'text-white bg-blue-500/20' : 'text-blue-500 bg-blue-50 dark-mode:bg-slate-800'} 
+                                 font-black text-2xl w-12 h-12 rounded-xl flex items-center justify-center">
+                        ${(i+1).toString().padStart(2, '0')}
+                    </span>
+                    <div class="flex flex-col items-start">
+                        <span class="font-bold text-lg dark-mode:text-white">${m}</span>
+                        <span class="text-xs text-slate-300 dark-mode:text-slate-400 font-medium mt-1">${(curriculum[i]?.theme || '').substring(0, 20)}...</span>
+                    </div>
+                `;
                 nav.appendChild(btn);
             });
         }
@@ -279,22 +1578,36 @@
                 const isSelected = state.selectedDayId === dayId;
 
                 const card = document.createElement('div');
-                card.className = `day-card animate-fade bg-white rounded-3xl p-5 flex flex-col h-[240px] ${isCompleted ? 'completed-card' : ''} ${isSelected ? 'selected-card shadow-lg ring-2 ring-blue-500' : ''}`;
+                card.className = `day-card animate-fade bg-white dark-mode:bg-slate-800 rounded-3xl p-5 flex flex-col h-[280px] ${isCompleted ? 'completed-card' : ''} ${isSelected ? 'selected-card shadow-lg ring-2 ring-blue-500' : ''}`;
                 
                 card.innerHTML = `
                     <div class="flex-grow">
                         <div class="flex justify-between items-start mb-4">
-                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${dayNames[i]}</span>
+                            <span class="text-sm font-black text-slate-400 dark-mode:text-slate-400 uppercase tracking-widest">${dayNames[i]}</span>
                             <div class="flex items-center gap-2">
-                                ${isCompleted ? '<span class="text-emerald-600 text-xs">✔</span>' : ''}
-                                <span class="w-7 h-7 rounded-xl bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-600">${dayNum}</span>
+                                ${isCompleted ? `
+                                    <span class="text-amber-600 dark-mode:text-amber-400 text-sm flex items-center gap-1">
+                                        <span class="text-xs">🪙</span>
+                                        <span class="font-bold">100</span>
+                                    </span>
+                                    <span class="text-emerald-600 text-sm">✔</span>
+                                ` : ''}
+                                <span class="w-8 h-8 rounded-xl bg-slate-100 dark-mode:bg-slate-700 flex items-center justify-center text-sm font-black text-slate-600 dark-mode:text-slate-300">${dayNum}</span>
                             </div>
                         </div>
-                        <h4 class="text-sm font-extrabold text-slate-800 leading-tight mb-4">${topic}</h4>
+                        <h4 class="text-lg font-extrabold text-slate-800 dark-mode:text-white leading-tight mb-4">${topic}</h4>
                     </div>
-                    <div class="pt-4 border-t border-slate-50 flex items-center justify-between">
-                         <span class="text-[9px] font-black ${isSelected ? 'text-blue-600' : 'text-slate-400'} uppercase">${isSelected ? "SEÇİLİB" : "SEÇ"}</span>
-                         <span class="text-[8px] text-slate-400">${i >= 5 ? 'Həftəsonu' : 'Dərs'}</span>
+                    <div class="pt-4 border-t border-slate-50 dark-mode:border-slate-700">
+                        <button onclick="event.stopPropagation(); showIzahModal('${topic}')" class="izah-btn w-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            İZAH
+                        </button>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-xs font-black ${isSelected ? 'text-blue-600 dark-mode:text-blue-400' : 'text-slate-400'} uppercase">${isSelected ? "SEÇİLİB" : "SEÇ"}</span>
+                            <span class="text-xs text-slate-400 dark-mode:text-slate-500">${i >= 5 ? 'Həftəsonu' : 'Dərs'}</span>
+                        </div>
                     </div>
                 `;
                 
@@ -314,25 +1627,44 @@
             const btn = document.getElementById('mark-complete-btn');
             if (state.completedTasks[state.selectedDayId]) {
                 btn.innerText = "❌ Bitməyib kimi qeyd et";
-                btn.className = "w-full py-3 rounded-2xl bg-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-300 transition flex items-center justify-center gap-2";
+                btn.className = "w-full py-3 rounded-2xl bg-slate-200 dark-mode:bg-slate-700 text-slate-700 dark-mode:text-slate-300 text-sm font-bold hover:bg-slate-300 dark-mode:hover:bg-slate-600 transition flex items-center justify-center gap-2";
             } else {
                 btn.innerText = "✅ Mövzunu bitirdim";
-                btn.className = "w-full py-3 rounded-2xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition shadow-lg shadow-emerald-100 flex items-center justify-center gap-2";
+                btn.className = "w-full py-3 rounded-2xl bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 transition shadow-lg shadow-emerald-100 dark-mode:shadow-emerald-900/20 flex items-center justify-center gap-2";
             }
         }
 
         function toggleCompleteCurrent() {
             if (!state.selectedDayId) return;
             const id = state.selectedDayId;
+            
             if (state.completedTasks[id]) {
                 delete state.completedTasks[id];
+                
+                const hasAddedCoins = localStorage.getItem(`coin_added_${id}`);
+                if (hasAddedCoins) {
+                    deductCoins(100);
+                    localStorage.removeItem(`coin_added_${id}`);
+                } else {
+                    addBotMessage("ℹ️ Mövzu geri alındı.");
+                }
             } else {
                 state.completedTasks[id] = true;
+                
+                const hasAddedCoins = localStorage.getItem(`coin_added_${id}`);
+                if (!hasAddedCoins) {
+                    addCoins(100);
+                    localStorage.setItem(`coin_added_${id}`, 'true');
+                } else {
+                    addBotMessage("✅ Mövzu tamamlandı kimi qeyd edildi (coin artıq verilib).");
+                }
             }
+            
             localStorage.setItem('devPlanner2026_tasks', JSON.stringify(state.completedTasks));
             renderDays();
             updateMarkBtn();
             updateProgressBar();
+            updateCoinCounter();
         }
 
         function updateProgressBar() {
@@ -345,16 +1677,34 @@
         }
 
         function changeWeek(w) {
+            if (w < 1 || w > 4) return;
+            
             state.currentWeek = w;
-            const btns = document.querySelectorAll('.week-btn');
-            btns.forEach(btn => {
-                if (parseInt(btn.dataset.week) === w) {
-                    btn.className = "week-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white shadow-sm text-blue-600";
+            state.selectedDayId = null;
+            state.selectedTopic = null;
+            saveStateToStorage();
+            
+            document.getElementById('current-week-header').textContent = `Həftə ${w}`;
+            document.getElementById('current-week-display').textContent = w;
+            document.getElementById('selected-topic-display').innerText = "Heç bir mövzu seçilməyib";
+            
+            // Quick week düymələrini yenilə
+            const quickWeekBtns = document.querySelectorAll('.quick-week-btn');
+            quickWeekBtns.forEach((btn, index) => {
+                if (index + 1 === w) {
+                    btn.classList.add('active');
                 } else {
-                    btn.className = "week-btn px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-slate-600";
+                    btn.classList.remove('active');
                 }
             });
+            
             renderDays();
+            updateMarkBtn();
+            
+            // Dropdown-dakı seçimi yenilə
+            if (state.weekDropdownOpen) {
+                updateCurrentMonthWeeks();
+            }
         }
 
         function updateHeader() {
@@ -374,40 +1724,63 @@
             
             if (!apiKey) {
                 setTimeout(() => {
-                    addBotMessage(`[Demo Modu]: "${state.selectedTopic || 'Seçilmiş mövzu'}" haqqında sualınızı aldım. API açarı daxil edildikdə mən sizə tam dəstək verəcəm.`);
-                }, 500);
+                    addBotMessage(`⚙️ Zəhmət olmasa əvvəlcə <b>Tənzimləmələr</b> düyməsindən Gemini API açarınızı daxil edin.`);
+                }, 300);
                 return;
             }
 
-            const typing = addBotMessage("AI Dəstək düşünür...");
+            const typing = addBotMessage("⏳ Düşünürəm...");
             
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: userPrompt }] }],
-                        systemInstruction: { 
-                            parts: [{ text: `Sən proqramlaşdırma üzrə AI Dəstək sistemisən. Kontekst Mövzu: ${state.selectedTopic || 'Ümumi Proqramlaşdırma'}. Sənə verilən suallara Azərbaycan dilində, sadə, texniki cəhətdən doğru və aydın cavablar verməlisən. Əgər kod nümunəsi lazımdırsa, mütləq Markdown formatında təqdim et.` }] 
-                        }
+                        contents: [
+                            {
+                                role: "user",
+                                parts: [{ text: `[SİSTEM TƏLİMATI]: Sən proqramlaşdırma üzrə köməkçi müəllimisən. Cari mövzu: "${state.selectedTopic || 'Proqramlaşdırma'}". Sualları Azərbaycan dilində, birbaşa və konkret cavabla. Mənbə göstərmə, texniki xəbərdarlıq yazma. Hər dəfə fərqli izah tərzi seç: real həyat nümunəsi, analogiya, addım-addım, və ya qısa xülasə. Kod lazımdırsa Markdown formatında ver.` }]
+                            },
+                            {
+                                role: "model",
+                                parts: [{ text: "Başa düşdüm, hazıram!" }]
+                            },
+                            {
+                                role: "user",
+                                parts: [{ text: userPrompt }]
+                            }
+                        ]
                     })
                 });
 
                 const data = await response.json();
+
+                if (!response.ok) {
+                    const errMsg = data?.error?.message || `HTTP ${response.status}: ${response.statusText}`;
+                    console.error('[Gemini API Xətası]', data);
+                    typing.remove();
+                    addBotMessage(`❌ API xətası: ${errMsg}`);
+                    return;
+                }
+
                 typing.remove();
                 const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Təəssüf ki, cavab hazırlana bilmədi.";
                 addBotMessage(responseText);
             } catch (err) {
-                typing.remove();
-                addBotMessage("Bağlantı xətası baş verdi. Zəhmət olmasa bir az sonra yenidən cəhd edin.");
+                console.error('[Gemini Bağlantı Xətası]', err);
+                if (typing.parentNode) typing.remove();
+                addBotMessage(`❌ Bağlantı xətası: ${err.message || err}`);
             }
         }
 
         function addBotMessage(text) {
             const win = document.getElementById('chat-window');
             const div = document.createElement('div');
-            div.className = "ai-message bot-message animate-fade";
-            div.innerHTML = text.replace(/\n/g, '<br>').replace(/```([\s\S]*?)```/g, '<pre class="bg-slate-800 text-slate-100 p-3 rounded-lg my-2 overflow-x-auto"><code>$1</code></pre>');
+            div.className = "ai-message bot-message animate-fade dark-mode:bg-slate-800 dark-mode:text-slate-200 dark-mode:border-slate-700";
+            div.innerHTML = text.replace(/\n/g, '<br>').replace(/```([\s\S]*?)```/g, '<pre class="bg-slate-800 dark-mode:bg-slate-900 text-slate-100 p-3 rounded-lg my-2 overflow-x-auto"><code>$1</code></pre>');
             win.appendChild(div);
             win.scrollTop = win.scrollHeight;
             return div;
@@ -437,6 +1810,14 @@
             callGemini(val);
         }
 
+        function clearChat() {
+            const chatWindow = document.getElementById('chat-window');
+            if (chatWindow) {
+                chatWindow.innerHTML = '';
+                addBotMessage("Sohbet təmizləndi. Yeni sual verə bilərsiniz.");
+            }
+        }
+
         function askAIPreset(text) {
             if(!state.selectedTopic) {
                 addBotMessage("Mövzu seçilməyib.");
@@ -446,7 +1827,79 @@
             callGemini(text);
         }
 
+        // ========== SETTINGS MODAL ==========
+        function openSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            const input = document.getElementById('settings-api-input');
+            input.value = apiKey ? '••••••••••••••••' : '';
+            document.getElementById('settings-status').classList.add('hidden');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            // Update settings button indicator
+            updateSettingsBtnStyle();
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function saveApiKey() {
+            const input = document.getElementById('settings-api-input');
+            const val = input.value.trim();
+            if (val && val !== '••••••••••••••••') {
+                apiKey = val;
+                localStorage.setItem('devPlanner2026_apiKey', apiKey);
+                document.getElementById('settings-status').classList.remove('hidden');
+                updateSettingsBtnStyle();
+                setTimeout(() => document.getElementById('settings-status').classList.add('hidden'), 3000);
+            }
+        }
+
+        function clearApiKey() {
+            if (confirm('API açarını silmək istədiyinizə əminsiniz?')) {
+                apiKey = '';
+                localStorage.removeItem('devPlanner2026_apiKey');
+                document.getElementById('settings-api-input').value = '';
+                updateSettingsBtnStyle();
+            }
+        }
+
+        function updateSettingsBtnStyle() {
+            const btn = document.getElementById('settings-btn');
+            if (!btn) return;
+            if (apiKey) {
+                btn.classList.remove('bg-slate-100', 'border-slate-200', 'text-slate-600');
+                btn.classList.add('bg-emerald-50', 'border-emerald-300', 'text-emerald-600');
+                btn.title = '✅ API Qoşulub - Tənzimləmələr';
+            } else {
+                btn.classList.remove('bg-emerald-50', 'border-emerald-300', 'text-emerald-600');
+                btn.classList.add('bg-amber-50', 'border-amber-300', 'text-amber-600');
+                btn.title = '⚠️ API açarı yoxdur - Tənzimləmələr';
+            }
+        }
+
         window.onload = init;
+
+        // Escape düyməsi ilə modalı bağlamaq
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeIzahModal();
+                closeSettingsModal();
+                const dropdown = document.getElementById('week-dropdown-content');
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                    state.weekDropdownOpen = false;
+                }
+            }
+        });
+
+        // Modalın xaricinə kliklədikdə bağlamaq
+        document.getElementById('izah-modal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeIzahModal();
+            }
+        });
     </script>
 </body>
 </html>
